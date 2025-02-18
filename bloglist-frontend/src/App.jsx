@@ -10,6 +10,10 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
@@ -40,11 +44,32 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      console.log('Wrong credentials')
+      console.log('Wrong credentials', exception)
       // setTimeout(() => {
       //   setErrorMessage(null)
       // }, 5000)
     }
+  }
+
+  const handleCreate = async (event) => {
+    event.preventDefault()
+    console.log('creating blog')
+    try {
+      const newBlog = {
+        author,
+        url,
+        title
+      }
+      const savedBlog = await blogService.create(newBlog)
+      setBlogs(blogs.concat(savedBlog))
+      setAuthor('')
+      setUrl('')
+      setTitle('')
+
+    } catch (exception) {
+      console.log('exception', exception)
+    }
+
   }
 
   const handleLogout = () => {
@@ -96,6 +121,38 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <p>{user.username} logged in <button onClick={handleLogout}>log out</button></p>
+      <form onSubmit={handleCreate}>
+        <h2>Create New</h2>
+        <div>
+          title:
+          <input
+            type="text"
+            value={title}
+            name="Title"
+            onChange={({ target }) => setTitle(target.value)}
+          />
+        </div>
+        <div>
+          author:
+          <input
+            type="text"
+            value={author}
+            name="Author"
+            onChange={({ target }) => setAuthor(target.value)}
+          />
+        </div>
+        <div>
+          url:
+          <input
+            type="text"
+            value={url}
+            name="Url"
+            onChange={({ target }) => setUrl(target.value)}
+          />
+        </div>
+        <button type="submit">create</button>
+      </form>
+
       {blogFrom()}
     </div>
   )
