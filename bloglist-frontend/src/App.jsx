@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
 
 
 const App = () => {
@@ -9,6 +10,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [infoMessage, setInfoMessage] = useState(null)
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -43,11 +47,26 @@ const App = () => {
       blogService.setToken(user.token)
       setUsername('')
       setPassword('')
+
+      setInfoMessage(`Logged in as ${username}`)
+      setTimeout(() => {
+        setInfoMessage(null)
+      }, 5000)
+
     } catch (exception) {
-      console.log('Wrong credentials', exception)
-      // setTimeout(() => {
-      //   setErrorMessage(null)
-      // }, 5000)
+
+      if (exception.response) {
+        setErrorMessage(exception.response.data.error)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      } else {
+        setErrorMessage('something went wrong')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      }
+
     }
   }
 
@@ -65,15 +84,32 @@ const App = () => {
       setAuthor('')
       setUrl('')
       setTitle('')
-
+      setInfoMessage(`Blog created`)
+      setTimeout(() => {
+        setInfoMessage(null)
+      }, 5000)
     } catch (exception) {
-      console.log('exception', exception)
-    }
 
+      if (exception.response) {
+        setErrorMessage(exception.response.data.error)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      } else {
+        setErrorMessage('something went wrong')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      }
+    }
   }
 
   const handleLogout = () => {
     setUser(null)
+    setInfoMessage(`Logged out`)
+    setTimeout(() => {
+      setInfoMessage(null)
+    }, 5000)
     window.localStorage.removeItem('loggedNoteappUser')
   }
 
@@ -111,6 +147,8 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification message={errorMessage} type={"error"} />
+        <Notification message={infoMessage} type={"info"} />
         {loginForm()}
       </div>
     )
@@ -119,7 +157,10 @@ const App = () => {
 
   return (
     <div>
+
       <h2>blogs</h2>
+      <Notification message={errorMessage} type={"error"} />
+      <Notification message={infoMessage} type={"info"} />
       <p>{user.username} logged in <button onClick={handleLogout}>log out</button></p>
       <form onSubmit={handleCreate}>
         <h2>Create New</h2>
