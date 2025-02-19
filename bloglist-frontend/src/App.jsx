@@ -19,7 +19,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs(blogs)
+      setBlogs(blogs.sort((blog1, blog2) => blog2.likes - blog1.likes))
     )
   }, [])
 
@@ -95,6 +95,37 @@ const App = () => {
     }
   }
 
+  const handleUpdate = async (blogObj) => {
+    try {
+      const updatedBlog = await blogService.update(blogObj.id, blogObj)
+      setBlogs(blogs.map((blog) => {
+        if (blog.id === updatedBlog.id) {
+          return updatedBlog
+        } else {
+          return blog
+        }
+      }
+      ))
+      setInfoMessage(`Blog updated`)
+      setTimeout(() => {
+        setInfoMessage(null)
+      }, 5000)
+
+    } catch (exception) {
+      if (exception.response) {
+        setErrorMessage(exception.response.data.error)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      } else {
+        setErrorMessage('something went wrong')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      }
+    }
+  }
+
   const handleLogout = () => {
     setUser(null)
     setInfoMessage(`Logged out`)
@@ -128,9 +159,44 @@ const App = () => {
     </form>
   )
 
+  const handleDeleteBlog = async (blog) => {
+    try {
+      // blogService.deleteBlog(id)
+      if (window.confirm(`remove blog ${blog.title} by ${blog.user.name}`)) {
+        await blogService.deleteBlog(blog.id)
+
+        setBlogs(blogs.filter(b => blog.id !== b.id))
+
+        setInfoMessage(`Blog deleted`)
+        setTimeout(() => {
+          setInfoMessage(null)
+        }, 5000)
+      }
+    } catch (exception) {
+      if (exception.response) {
+        setErrorMessage(exception.response.data.error)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      } else {
+        setErrorMessage('something went wrong')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      }
+    }
+
+  }
+
   const blogFrom = () => {
     return blogs.map(blog =>
-      <Blog key={blog.id} blog={blog} />
+      <Blog
+        key={blog.id}
+        blog={blog}
+        updateBlog={handleUpdate}
+        displayRemove={blog.user && blog.user.username === user.username}
+        deleteBlog={handleDeleteBlog}
+      />
     )
   }
 
@@ -148,16 +214,13 @@ const App = () => {
 
   return (
     <div>
-
       <h2>blogs</h2>
       <Notification message={errorMessage} type={"error"} />
       <Notification message={infoMessage} type={"info"} />
       <p>{user.username} logged in <button onClick={handleLogout}>log out</button></p>
-
       <Togglable buttonLabel={"Create a blog"} ref={blogFormRef}>
-        <BlogForm createBlog={handleCreate}/>
+        <BlogForm createBlog={handleCreate} />
       </Togglable>
-
       {blogFrom()}
     </div>
   )
