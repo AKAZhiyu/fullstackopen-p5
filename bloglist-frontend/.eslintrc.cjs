@@ -19,9 +19,7 @@ module.exports = {
         "error",
         2  
     ],
-<<<<<<< HEAD
-    'react/prop-types': 0
-=======
+    'react/prop-types': 0,
     "linebreak-style": [
         "error",
         "unix"
@@ -45,7 +43,6 @@ module.exports = {
     "no-console": 0,
     "react/react-in-jsx-scope": "off",
     "react/prop-types": 0,
-    "no-unused-vars": 0    
->>>>>>> 90e53a0421a4da6456c799ad2ee8b1256dec14f2
+    "no-unused-vars": 0
   },
 }
