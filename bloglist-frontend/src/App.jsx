@@ -53,9 +53,8 @@ const App = () => {
       }, 5000)
 
     } catch (exception) {
-
-      if (exception.response) {
-        setErrorMessage(exception.response.data.error)
+      if (exception.response && exception.response.data && typeof exception.response.data === 'string' ) {
+        setErrorMessage('Error: ' + exception.response.data.error)
         setTimeout(() => {
           setErrorMessage(null)
         }, 5000)
@@ -75,7 +74,7 @@ const App = () => {
     try {
       const savedBlog = await blogService.create(blogObj)
       setBlogs(blogs.concat(savedBlog))
-      setInfoMessage(`Blog created`)
+      setInfoMessage('Blog created')
       setTimeout(() => {
         setInfoMessage(null)
       }, 5000)
@@ -106,7 +105,10 @@ const App = () => {
         }
       }
       ))
-      setInfoMessage(`Blog updated`)
+      blogService.getAll().then(blogs =>
+        setBlogs(blogs.sort((blog1, blog2) => blog2.likes - blog1.likes))
+      )
+      setInfoMessage('Blog liked')
       setTimeout(() => {
         setInfoMessage(null)
       }, 5000)
@@ -128,7 +130,7 @@ const App = () => {
 
   const handleLogout = () => {
     setUser(null)
-    setInfoMessage(`Logged out`)
+    setInfoMessage('Logged out')
     setTimeout(() => {
       setInfoMessage(null)
     }, 5000)
@@ -167,7 +169,7 @@ const App = () => {
 
         setBlogs(blogs.filter(b => blog.id !== b.id))
 
-        setInfoMessage(`Blog deleted`)
+        setInfoMessage('Blog deleted')
         setTimeout(() => {
           setInfoMessage(null)
         }, 5000)
@@ -204,8 +206,8 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification message={errorMessage} type={"error"} />
-        <Notification message={infoMessage} type={"info"} />
+        <Notification message={errorMessage} type={'error'} />
+        <Notification message={infoMessage} type={'info'} />
         {loginForm()}
       </div>
     )
@@ -215,10 +217,10 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={errorMessage} type={"error"} />
-      <Notification message={infoMessage} type={"info"} />
+      <Notification message={errorMessage} type={'error'} />
+      <Notification message={infoMessage} type={'info'} />
       <p>{user.username} logged in <button onClick={handleLogout}>log out</button></p>
-      <Togglable buttonLabel={"Create a blog"} ref={blogFormRef}>
+      <Togglable buttonLabel={'Create a blog'} ref={blogFormRef}>
         <BlogForm createBlog={handleCreate} />
       </Togglable>
       {blogFrom()}
