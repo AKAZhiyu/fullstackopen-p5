@@ -27,12 +27,18 @@ const Blog = ({ blog, updateBlog, displayRemove, deleteBlog }) => {
     deleteBlog(blog)
   }
 
+  if (showDetails === false) {
+    return (
+      <div style={blogStyle}>
+        <div style={hideWhenInDetailed} className='blog'>
+          <div>{blog.title} {blog.author} <button onClick={toggleShowDetails}>view</button></div>
+        </div>
+      </div>)
+  }
+
   return (
     <div style={blogStyle}>
-      <div style={hideWhenInDetailed}>
-        <div>{blog.title} {blog.author} <button onClick={toggleShowDetails}>view</button></div>
-      </div>
-      <div style={showWhenInDetailed}>
+      <div style={showWhenInDetailed} className='blog'>
         <div>{blog.title} {blog.author} <button onClick={toggleShowDetails}>hide</button></div>
         <div>{blog.url}</div>
         <div>{blog.likes} <button onClick={likeBlog}>like</button> </div>
