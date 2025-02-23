@@ -53,17 +53,21 @@ const App = () => {
       }, 5000)
 
     } catch (exception) {
-      if (exception.response && exception.response.data && typeof exception.response.data === 'string' ) {
-        setErrorMessage('Error: ' + exception.response.data.error)
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
-      } else {
-        setErrorMessage('something went wrong')
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
-      }
+      // if (exception.response && exception.response.data && typeof exception.response.data === 'string') {
+      //   setErrorMessage('Error: ' + exception.response.data.error)
+      //   setTimeout(() => {
+      //     setErrorMessage(null)
+      //   }, 5000)
+      // } else {
+      //   setErrorMessage('something went wrong')
+      //   setTimeout(() => {
+      //     setErrorMessage(null)
+      //   }, 5000)
+      // }
+      setErrorMessage('wrong credentials')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
 
     }
   }
@@ -138,13 +142,14 @@ const App = () => {
   }
 
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
+    <form onSubmit={handleLogin} data-testid='login_form'>
       <div>
         username
         <input
           type="text"
           value={username}
           name="Username"
+          data-testid='username'
           onChange={({ target }) => setUsername(target.value)}
         />
       </div>
@@ -154,6 +159,7 @@ const App = () => {
           type="password"
           value={password}
           name="Password"
+          data-testid='password'
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
